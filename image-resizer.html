@@ -121,6 +121,7 @@
             gap: 10px;
             justify-content: center;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
 
         .action-buttons button {
@@ -133,6 +134,7 @@
             font-size: 1rem;
             font-weight: 600;
             transition: var(--transition);
+            min-width: 120px;
         }
 
         .action-buttons button:hover {
@@ -142,17 +144,19 @@
 
         #output {
             margin-top: 20px;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
         }
 
         #output img {
             max-width: 100%;
+            max-height: 400px;
             height: auto;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             margin-bottom: 20px;
+            object-fit: contain;
         }
 
         #downloadButton {
@@ -190,6 +194,7 @@
         #ad-top, #ad-bottom {
             margin: 20px 0;
             text-align: center;
+            min-width: 320px;
         }
 
         /* Loading Spinner */
@@ -208,6 +213,13 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        #imageInfo {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -216,18 +228,16 @@
     </header>
 
     <main>
-        <!-- Top Ad Unit -->
+        <!-- Top Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
         <section id="ad-top">
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-9312214619729808/8520276979"
-            crossorigin="anonymous"></script>                   
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client=ca-app-pub-9312214619729808/8520276979"
-                 data-ad-slot=9312214619729808/8520276979
+                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
+                (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </section>
 
@@ -235,38 +245,40 @@
         <section id="tool">
             <div class="file-input">
                 <input type="file" id="imageInput" accept="image/*">
-                <label for="imageInput">Choose File</label>
+                <label for="imageInput">📁 Choose File</label>
             </div>
 
             <div id="sliderContainer">
                 <label for="resizeSlider">Resize Scale: <span id="resizeValue">50%</span></label>
-                <input type="range" id="resizeSlider" min="10" max="100" value="50">
+                <input type="range" id="resizeSlider" min="10" max="200" value="50">
             </div>
 
             <div class="action-buttons">
-                <button id="resizeButton">Resize Image</button>
-                <button id="rotateButton">Rotate Image</button>
+                <button id="resizeButton">📐 Resize</button>
+                <button id="rotateButton">🔄 Rotate</button>
+                <button id="resetButton">↺ Reset</button>
             </div>
 
             <div class="loader" id="loader"></div>
+            
             <div id="output">
-                <img id="resizedImage" src="" alt="Resized Image">
-                <button id="downloadButton">Download Image</button>
+                <img id="resizedImage" src="" alt="Your image will appear here">
+                <button id="downloadButton">💾 Download Image</button>
             </div>
+            
+            <div id="imageInfo"></div>
         </section>
 
-        <!-- Bottom Ad Unit -->
+        <!-- Bottom Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
         <section id="ad-bottom">
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_AD_UNIT_ID"
-                    crossorigin="anonymous"></script>
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-pub-YOUR_AD_UNIT_ID"
-                 data-ad-slot="0987654321"
+                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
             <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
+                (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </section>
     </main>
@@ -282,30 +294,63 @@
         const imageInput = document.getElementById('imageInput');
         const resizeButton = document.getElementById('resizeButton');
         const rotateButton = document.getElementById('rotateButton');
+        const resetButton = document.getElementById('resetButton');
         const output = document.getElementById('output');
         const resizedImage = document.getElementById('resizedImage');
         const downloadButton = document.getElementById('downloadButton');
         const loader = document.getElementById('loader');
+        const imageInfo = document.getElementById('imageInfo');
 
         let currentImage = null;
+        let originalImageData = null; // Store original image data URL
         let rotationAngle = 0;
+        let currentScale = 0.5;
 
         // Update slider value display
         resizeSlider.addEventListener('input', function() {
             resizeValue.textContent = `${resizeSlider.value}%`;
+            currentScale = resizeSlider.value / 100;
         });
 
         // Handle image upload
-        imageInput.addEventListener('change', function() {
-            const file = imageInput.files[0];
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Check if file is an image
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                currentImage = new Image();
-                currentImage.src = e.target.result;
-                currentImage.onload = function() {
-                    resizedImage.src = currentImage.src;
+                const img = new Image();
+                img.onload = function() {
+                    currentImage = img;
+                    originalImageData = e.target.result;
+                    rotationAngle = 0;
+                    
+                    // Display the image
+                    resizedImage.src = e.target.result;
+                    output.style.display = 'block';
+                    downloadButton.style.display = 'none';
+                    
+                    // Show image info
+                    imageInfo.textContent = `📸 ${file.name} | ${img.width} × ${img.height} pixels`;
+                    imageInfo.style.display = 'block';
+                    
+                    // Reset slider to 50%
+                    resizeSlider.value = 50;
+                    resizeValue.textContent = '50%';
+                    currentScale = 0.5;
                 };
+                img.src = e.target.result;
+            };
+
+            reader.onerror = function() {
+                alert('Error reading file. Please try again.');
             };
 
             reader.readAsDataURL(file);
@@ -314,7 +359,7 @@
         // Resize Image
         resizeButton.addEventListener('click', function() {
             if (!currentImage) {
-                alert('Please select an image file.');
+                alert('Please select an image file first.');
                 return;
             }
 
@@ -322,36 +367,73 @@
             loader.style.display = 'block';
             output.style.display = 'none';
 
-            const scale = resizeSlider.value / 100;
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            setTimeout(() => {
+                try {
+                    const scale = currentScale;
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
 
-            canvas.width = currentImage.width * scale;
-            canvas.height = currentImage.height * scale;
+                    // Get original dimensions
+                    const originalW = currentImage.width;
+                    const originalH = currentImage.height;
+                    
+                    let displayW, displayH;
+                    if (rotationAngle === 90 || rotationAngle === 270) {
+                        displayW = originalH;
+                        displayH = originalW;
+                    } else {
+                        displayW = originalW;
+                        displayH = originalH;
+                    }
+                    
+                    const finalW = Math.round(displayW * scale);
+                    const finalH = Math.round(displayH * scale);
+                    
+                    canvas.width = finalW;
+                    canvas.height = finalH;
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Apply rotation
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate((rotationAngle * Math.PI) / 180);
+                    
+                    // Draw image centered and scaled
+                    ctx.drawImage(currentImage, -canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
 
-            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+                    const resizedImageData = canvas.toDataURL('image/jpeg', 0.92);
+                    resizedImage.src = resizedImageData;
 
-            const resizedImageData = canvas.toDataURL('image/jpeg', 0.9);
-            resizedImage.src = resizedImageData;
-
-            // Hide loader and show output
-            loader.style.display = 'none';
-            output.style.display = 'block';
-
-            // Show download button
-            downloadButton.style.display = 'block';
-            downloadButton.onclick = function() {
-                const link = document.createElement('a');
-                link.href = resizedImageData;
-                link.download = 'resized-image.jpg';
-                link.click();
-            };
+                    // Hide loader and show output
+                    loader.style.display = 'none';
+                    output.style.display = 'block';
+                    downloadButton.style.display = 'block';
+                    
+                    // Update download button
+                    downloadButton.onclick = function() {
+                        const link = document.createElement('a');
+                        link.href = resizedImageData;
+                        const fileName = imageInput.files[0] ? imageInput.files[0].name.split('.')[0] : 'image';
+                        link.download = `${fileName}-resized.jpg`;
+                        link.click();
+                    };
+                    
+                    // Update image info
+                    imageInfo.textContent = `📐 Resized: ${finalW} × ${finalH} pixels`;
+                } catch (error) {
+                    console.error('Resize error:', error);
+                    alert('Error resizing image. Please try again.');
+                    loader.style.display = 'none';
+                    output.style.display = 'block';
+                }
+            }, 100);
         });
 
         // Rotate Image
         rotateButton.addEventListener('click', function() {
             if (!currentImage) {
-                alert('Please select an image file.');
+                alert('Please select an image file first.');
                 return;
             }
 
@@ -359,39 +441,103 @@
             loader.style.display = 'block';
             output.style.display = 'none';
 
-            rotationAngle = (rotationAngle + 90) % 360;
+            setTimeout(() => {
+                try {
+                    rotationAngle = (rotationAngle + 90) % 360;
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
 
-            if (rotationAngle === 90 || rotationAngle === 270) {
-                canvas.width = currentImage.height;
-                canvas.height = currentImage.width;
-            } else {
-                canvas.width = currentImage.width;
-                canvas.height = currentImage.height;
+                    let width, height;
+                    if (rotationAngle === 90 || rotationAngle === 270) {
+                        width = currentImage.height;
+                        height = currentImage.width;
+                    } else {
+                        width = currentImage.width;
+                        height = currentImage.height;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate((rotationAngle * Math.PI) / 180);
+                    ctx.drawImage(currentImage, -currentImage.width / 2, -currentImage.height / 2);
+
+                    const rotatedImageData = canvas.toDataURL('image/jpeg', 0.92);
+                    resizedImage.src = rotatedImageData;
+
+                    // Hide loader and show output
+                    loader.style.display = 'none';
+                    output.style.display = 'block';
+                    downloadButton.style.display = 'block';
+                    
+                    // Update download button
+                    downloadButton.onclick = function() {
+                        const link = document.createElement('a');
+                        link.href = rotatedImageData;
+                        const fileName = imageInput.files[0] ? imageInput.files[0].name.split('.')[0] : 'image';
+                        link.download = `${fileName}-rotated.jpg`;
+                        link.click();
+                    };
+                    
+                    // Update image info
+                    const angleText = rotationAngle === 0 ? '0°' : `${rotationAngle}°`;
+                    imageInfo.textContent = `🔄 Rotated: ${angleText}`;
+                } catch (error) {
+                    console.error('Rotate error:', error);
+                    alert('Error rotating image. Please try again.');
+                    loader.style.display = 'none';
+                    output.style.display = 'block';
+                }
+            }, 100);
+        });
+
+        // Reset Image
+        resetButton.addEventListener('click', function() {
+            if (!originalImageData) {
+                alert('Please select an image file first.');
+                return;
             }
 
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((rotationAngle * Math.PI) / 180);
-            ctx.drawImage(currentImage, -currentImage.width / 2, -currentImage.height / 2);
-
-            const rotatedImageData = canvas.toDataURL('image/jpeg', 0.9);
-            resizedImage.src = rotatedImageData;
-
-            // Hide loader and show output
-            loader.style.display = 'none';
+            // Reset rotation and display original
+            rotationAngle = 0;
+            resizeSlider.value = 50;
+            resizeValue.textContent = '50%';
+            currentScale = 0.5;
+            
+            resizedImage.src = originalImageData;
             output.style.display = 'block';
-
-            // Show download button
-            downloadButton.style.display = 'block';
-            downloadButton.onclick = function() {
-                const link = document.createElement('a');
-                link.href = rotatedImageData;
-                link.download = 'rotated-image.jpg';
-                link.click();
-            };
+            downloadButton.style.display = 'none';
+            
+            // Update image info
+            if (currentImage) {
+                imageInfo.textContent = `↺ Reset: ${currentImage.width} × ${currentImage.height} pixels`;
+            }
         });
+
+        // Handle drag and drop
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                imageInput.files = files;
+                imageInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        console.log('Image Resizer Tool loaded successfully!');
+        console.log('AdMob ID: ca-app-pub-9312214619729808');
+        console.log('Ad Unit ID: ca-app-pub-9312214619729808/8520276979');
     </script>
+
+    <!-- AdMob script (async) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-9312214619729808"
+     crossorigin="anonymous"></script>
 </body>
 </html>
