@@ -9,9 +9,6 @@
     <meta name="keywords" content="image converter, convert image, JPG, PNG, WebP, BMP, GIF, TIFF, image tool">
     <meta name="author" content="Muhammad Zaid">
     <title>Image Converter Tool - Convert Images Online</title>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-9312214619729808"
-     crossorigin="anonymous"></script>
     <style>
         /* Global Styles */
         * {
@@ -22,7 +19,7 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background-color: #f0f2f5;
             color: #333;
             line-height: 1.6;
             padding-bottom: 60px;
@@ -33,7 +30,7 @@
             color: white;
             padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         header h1 {
@@ -91,10 +88,20 @@
         }
 
         #file-name {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #555;
             flex: 1;
             min-width: 150px;
+            word-break: break-all;
+        }
+
+        #file-info {
+            font-size: 0.9rem;
+            color: #666;
+            background: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: none;
         }
 
         #format-selection {
@@ -145,6 +152,12 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        #convert-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         #convert-btn:active {
             transform: translateY(0);
         }
@@ -169,9 +182,14 @@
         }
 
         #result-section h2 {
-            color: #333;
-            margin-bottom: 20px;
+            color: #28a745;
+            margin-bottom: 10px;
             font-size: 1.5rem;
+        }
+
+        #result-section p {
+            color: #666;
+            margin-bottom: 15px;
         }
 
         #converted-image {
@@ -186,9 +204,9 @@
 
         #download-link {
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 10px;
             padding: 12px 30px;
-            background: #28a745;
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -197,7 +215,6 @@
         }
 
         #download-link:hover {
-            background: #218838;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
         }
@@ -220,17 +237,8 @@
         }
 
         /* Ad Section */
-        #ad-section {
-            margin: 30px auto;
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            min-height: 90px;
-        }
-
-        #ad-section-top {
-            margin: 0 auto 30px;
+        #ad-section-top, #ad-section-bottom {
+            margin: 20px auto;
             text-align: center;
             padding: 10px;
             background: #f8f9fa;
@@ -328,11 +336,11 @@
     </header>
 
     <main>
-        <!-- Top Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
+        <!-- Top Ad Unit -->
         <section id="ad-section-top">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -346,6 +354,7 @@
             <div class="file-input-container">
                 <label for="image-input" class="file-input-label">📁 Choose File</label>
                 <span id="file-name">No file chosen</span>
+                <span id="file-info"></span>
             </div>
             <input type="file" id="image-input" accept="image/*" style="display: none;">
             <div id="format-selection">
@@ -362,21 +371,25 @@
             </div>
             <button id="convert-btn">🔄 Convert Image</button>
             <div class="loader" id="loader"></div>
+            <div id="status-message" style="text-align:center; color:#666; font-size:0.9rem; display:none;"></div>
         </section>
 
         <!-- Result Section -->
         <section id="result-section">
-            <h2>✅ Converted Image</h2>
+            <h2>✅ Conversion Complete!</h2>
+            <p>Your image has been successfully converted.</p>
             <img id="converted-image" src="" alt="Converted Image">
             <br>
             <a id="download-link" href="#" download="converted-image">💾 Download Converted Image</a>
+            <br>
+            <button id="convert-more-btn" style="margin-top:15px; padding:10px 25px; background:#6c757d; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600;">🔄 Convert More Images</button>
         </section>
 
-        <!-- Bottom Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
-        <section id="ad-section">
+        <!-- Bottom Ad Unit -->
+        <section id="ad-section-bottom">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -394,33 +407,48 @@
         // JavaScript Functionality
         const imageInput = document.getElementById('image-input');
         const fileNameDisplay = document.getElementById('file-name');
+        const fileInfoDisplay = document.getElementById('file-info');
         const formatSelect = document.getElementById('format-select');
         const convertBtn = document.getElementById('convert-btn');
         const resultSection = document.getElementById('result-section');
         const convertedImage = document.getElementById('converted-image');
         const downloadLink = document.getElementById('download-link');
         const loader = document.getElementById('loader');
+        const statusMessage = document.getElementById('status-message');
+        const convertMoreBtn = document.getElementById('convert-more-btn');
 
         let currentImageData = null;
+        let currentFileName = '';
+        let originalFileSize = 0;
 
         // Display the chosen file name
         imageInput.addEventListener('change', function() {
             if (imageInput.files.length > 0) {
                 const file = imageInput.files[0];
+                currentFileName = file.name;
+                originalFileSize = file.size;
                 fileNameDisplay.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
                 
-                // Preview the image
+                // Get image dimensions
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     currentImageData = e.target.result;
-                    // Show preview in result section
-                    convertedImage.src = e.target.result;
-                    resultSection.style.display = 'block';
-                    downloadLink.style.display = 'inline-block';
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function() {
+                        fileInfoDisplay.textContent = `📐 ${img.width} × ${img.height} pixels`;
+                        fileInfoDisplay.style.display = 'inline-block';
+                        
+                        // Show preview in result section
+                        convertedImage.src = e.target.result;
+                        resultSection.style.display = 'block';
+                        downloadLink.style.display = 'inline-block';
+                    };
                 };
                 reader.readAsDataURL(file);
             } else {
                 fileNameDisplay.textContent = 'No file chosen';
+                fileInfoDisplay.style.display = 'none';
                 currentImageData = null;
             }
         });
@@ -436,6 +464,9 @@
             loader.style.display = 'block';
             convertBtn.disabled = true;
             convertBtn.textContent = '⏳ Converting...';
+            resultSection.style.display = 'none';
+            statusMessage.style.display = 'block';
+            statusMessage.textContent = 'Processing image...';
 
             setTimeout(() => {
                 try {
@@ -465,14 +496,20 @@
                                 const convertedUrl = URL.createObjectURL(blob);
                                 convertedImage.src = convertedUrl;
                                 downloadLink.href = convertedUrl;
-                                downloadLink.download = `converted-image.${format === 'jpeg' ? 'jpg' : format}`;
+                                const ext = format === 'jpeg' ? 'jpg' : format;
+                                downloadLink.download = `converted-${Date.now()}.${ext}`;
+                                
                                 resultSection.style.display = 'block';
                                 downloadLink.style.display = 'inline-block';
+                                statusMessage.textContent = '✅ Conversion complete!';
                                 
                                 // Hide loader
                                 loader.style.display = 'none';
                                 convertBtn.disabled = false;
                                 convertBtn.textContent = '🔄 Convert Image';
+                                
+                                // Scroll to result
+                                resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             } else {
                                 throw new Error('Conversion failed');
                             }
@@ -488,8 +525,20 @@
                     loader.style.display = 'none';
                     convertBtn.disabled = false;
                     convertBtn.textContent = '🔄 Convert Image';
+                    statusMessage.style.display = 'none';
                 }
             }, 300);
+        });
+
+        // Convert more images
+        convertMoreBtn.addEventListener('click', function() {
+            resultSection.style.display = 'none';
+            imageInput.value = '';
+            currentImageData = null;
+            fileNameDisplay.textContent = 'No file chosen';
+            fileInfoDisplay.style.display = 'none';
+            statusMessage.style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // Handle drag and drop
@@ -503,6 +552,8 @@
             if (files.length > 0 && files[0].type.startsWith('image/')) {
                 imageInput.files = files;
                 imageInput.dispatchEvent(new Event('change'));
+            } else {
+                alert('⚠️ Please drop an image file.');
             }
         });
 
@@ -513,10 +564,10 @@
             }
         });
 
-        // Log AdMob IDs for verification
+        // Log AdSense setup for verification
         console.log('✅ Image Converter Tool loaded successfully!');
-        console.log('📌 Ad Client ID: ca-app-pub-9312214619729808');
-        console.log('📌 Ad Unit ID: ca-app-pub-9312214619729808/8520276979');
+        console.log('📌 AdSense Client ID: ca-pub-9312214619729808');
+        console.log('📌 Ad Unit ID: 8520276979');
     </script>
 </body>
 </html>
