@@ -9,9 +9,6 @@
     <meta name="keywords" content="PDF splitter, split PDF, extract PDF pages, PDF tool">
     <meta name="author" content="Muhammad Zaid">
     <title>PDF Split Tool - Split Your PDF Files Online</title>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-9312214619729808"
-    crossorigin="anonymous"></script>
     <style>
         /* Global Styles */
         * {
@@ -365,11 +362,11 @@
     </header>
 
     <main>
-        <!-- Top Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/2493924678 -->
+        <!-- Top Ad Unit -->
         <section id="ad-section-top">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="2493924678"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -412,11 +409,11 @@
             </div>
         </section>
 
-        <!-- Bottom Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/2493924678 -->
+        <!-- Bottom Ad Unit -->
         <section id="ad-section-bottom">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="2493924678"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -641,7 +638,6 @@
                     file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
                 );
                 if (pdfFiles.length > 0) {
-                    pdfInput.files = new DataTransfer().files;
                     const dataTransfer = new DataTransfer();
                     pdfFiles.forEach(file => dataTransfer.items.add(file));
                     pdfInput.files = dataTransfer.files;
@@ -659,11 +655,10 @@
             }
         });
 
-        // Log AdMob IDs for verification
+        // Log AdSense setup for verification
         console.log('✅ PDF Split Tool loaded successfully!');
-        console.log('📌 Ad Client ID: ca-app-pub-9312214619729808');
-        console.log('📌 Ad Unit ID: ca-app-pub-9312214619729808/2493924678');
-        console.log('📌 Account ID: ca-app-pub-9312214619729808~4900138730');
+        console.log('📌 AdSense Client ID: ca-pub-9312214619729808');
+        console.log('📌 Ad Unit ID: 2493924678');
         console.log('📌 PDF-lib library loaded:', typeof PDFLib !== 'undefined');
     </script>
 </body>
