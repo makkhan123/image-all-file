@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free online image resizer tool. Resize and rotate your images easily.">
     <meta name="keywords" content="image resizer, resize image, rotate image, free image tool">
-    <meta name="author" content="Your Name">
-    <title>Image Resizer Tool</title>
+    <meta name="author" content="Muhammad Zaid">
+    <title>Image Resizer Tool - Resize & Rotate Images Online</title>
     <style>
         /* CSS Styling */
         :root {
@@ -18,6 +18,10 @@
             --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             --border-radius: 12px;
             --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -30,12 +34,13 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            padding-bottom: 60px;
         }
 
         header {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: #fff;
-            padding: 30px 0;
+            padding: 30px 20px;
             text-align: center;
             width: 100%;
             box-shadow: var(--box-shadow);
@@ -45,6 +50,12 @@
             margin: 0;
             font-size: 2.5rem;
             font-weight: 600;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
 
         main {
@@ -78,7 +89,7 @@
         }
 
         .file-input label {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: #fff;
             padding: 12px 24px;
             border-radius: 8px;
@@ -90,8 +101,15 @@
         }
 
         .file-input label:hover {
-            background: #357abd;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        #file-name {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
         }
 
         #sliderContainer {
@@ -110,6 +128,31 @@
         #resizeSlider {
             width: 100%;
             cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+        }
+
+        #resizeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+        }
+
+        #resizeSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            border: none;
         }
 
         #resizeValue {
@@ -127,7 +170,7 @@
         }
 
         .action-buttons button {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
             color: #fff;
             padding: 12px 24px;
             border: none;
@@ -140,8 +183,14 @@
         }
 
         .action-buttons button:hover {
-            background: #357abd;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .action-buttons button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         #output {
@@ -186,6 +235,9 @@
             padding: 15px 0;
             width: 100%;
             margin-top: auto;
+            position: fixed;
+            bottom: 0;
+            z-index: 1000;
         }
 
         footer p {
@@ -197,12 +249,16 @@
             margin: 20px 0;
             text-align: center;
             min-width: 320px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-height: 90px;
         }
 
         /* Loading Spinner */
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
+            border-top: 4px solid #4a90e2;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -222,19 +278,57 @@
             color: #666;
             display: none;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            #tool {
+                padding: 20px;
+            }
+
+            .action-buttons button {
+                min-width: 100px;
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            #tool {
+                padding: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-buttons button {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Image Resizer Tool</h1>
+        <h1>📐 Image Resizer Tool</h1>
+        <p>Resize and rotate your images easily — 100% free!</p>
     </header>
 
     <main>
-        <!-- Top Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
+        <!-- Top Ad Unit -->
         <section id="ad-top">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -248,6 +342,7 @@
             <div class="file-input">
                 <input type="file" id="imageInput" accept="image/*">
                 <label for="imageInput">📁 Choose File</label>
+                <span id="file-name">No file chosen</span>
             </div>
 
             <div id="sliderContainer">
@@ -271,11 +366,11 @@
             <div id="imageInfo"></div>
         </section>
 
-        <!-- Bottom Ad Unit - AdMob Unit ID: ca-app-pub-9312214619729808/8520276979 -->
+        <!-- Bottom Ad Unit -->
         <section id="ad-bottom">
             <ins class="adsbygoogle"
                  style="display:block"
-                 data-ad-client="ca-app-pub-9312214619729808"
+                 data-ad-client="ca-pub-9312214619729808"
                  data-ad-slot="8520276979"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
@@ -286,7 +381,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2023 Image Resizer Tool. All rights reserved.</p>
+        <p>&copy; 2024 Image Resizer Tool. All rights reserved. | Made with ❤️</p>
     </footer>
 
     <script>
@@ -294,6 +389,7 @@
         const resizeSlider = document.getElementById('resizeSlider');
         const resizeValue = document.getElementById('resizeValue');
         const imageInput = document.getElementById('imageInput');
+        const fileNameDisplay = document.getElementById('file-name');
         const resizeButton = document.getElementById('resizeButton');
         const rotateButton = document.getElementById('rotateButton');
         const resetButton = document.getElementById('resetButton');
@@ -304,9 +400,10 @@
         const imageInfo = document.getElementById('imageInfo');
 
         let currentImage = null;
-        let originalImageData = null; // Store original image data URL
+        let originalImageData = null;
         let rotationAngle = 0;
         let currentScale = 0.5;
+        let originalFileName = '';
 
         // Update slider value display
         resizeSlider.addEventListener('input', function() {
@@ -324,6 +421,9 @@
                 alert('Please select an image file.');
                 return;
             }
+
+            originalFileName = file.name;
+            fileNameDisplay.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
 
             const reader = new FileReader();
 
@@ -367,6 +467,7 @@
 
             // Show loader
             loader.style.display = 'block';
+            resizeButton.disabled = true;
             output.style.display = 'none';
 
             setTimeout(() => {
@@ -409,6 +510,7 @@
 
                     // Hide loader and show output
                     loader.style.display = 'none';
+                    resizeButton.disabled = false;
                     output.style.display = 'block';
                     downloadButton.style.display = 'block';
                     
@@ -416,7 +518,7 @@
                     downloadButton.onclick = function() {
                         const link = document.createElement('a');
                         link.href = resizedImageData;
-                        const fileName = imageInput.files[0] ? imageInput.files[0].name.split('.')[0] : 'image';
+                        const fileName = originalFileName.split('.')[0] || 'image';
                         link.download = `${fileName}-resized.jpg`;
                         link.click();
                     };
@@ -427,6 +529,7 @@
                     console.error('Resize error:', error);
                     alert('Error resizing image. Please try again.');
                     loader.style.display = 'none';
+                    resizeButton.disabled = false;
                     output.style.display = 'block';
                 }
             }, 100);
@@ -441,6 +544,7 @@
 
             // Show loader
             loader.style.display = 'block';
+            rotateButton.disabled = true;
             output.style.display = 'none';
 
             setTimeout(() => {
@@ -472,6 +576,7 @@
 
                     // Hide loader and show output
                     loader.style.display = 'none';
+                    rotateButton.disabled = false;
                     output.style.display = 'block';
                     downloadButton.style.display = 'block';
                     
@@ -479,7 +584,7 @@
                     downloadButton.onclick = function() {
                         const link = document.createElement('a');
                         link.href = rotatedImageData;
-                        const fileName = imageInput.files[0] ? imageInput.files[0].name.split('.')[0] : 'image';
+                        const fileName = originalFileName.split('.')[0] || 'image';
                         link.download = `${fileName}-rotated.jpg`;
                         link.click();
                     };
@@ -491,6 +596,7 @@
                     console.error('Rotate error:', error);
                     alert('Error rotating image. Please try again.');
                     loader.style.display = 'none';
+                    rotateButton.disabled = false;
                     output.style.display = 'block';
                 }
             }, 100);
@@ -530,16 +636,22 @@
             if (files.length > 0 && files[0].type.startsWith('image/')) {
                 imageInput.files = files;
                 imageInput.dispatchEvent(new Event('change'));
+            } else {
+                alert('⚠️ Please drop an image file.');
             }
         });
 
-        console.log('Image Resizer Tool loaded successfully!');
-        console.log('AdMob ID: ca-app-pub-9312214619729808');
-        console.log('Ad Unit ID: ca-app-pub-9312214619729808/8520276979');
-    </script>
+        // Keyboard shortcut: Enter to resize
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement === document.body) {
+                resizeButton.click();
+            }
+        });
 
-    <!-- AdMob script (async) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-9312214619729808"
-     crossorigin="anonymous"></script>
+        // Log AdSense setup for verification
+        console.log('✅ Image Resizer Tool loaded successfully!');
+        console.log('📌 AdSense Client ID: ca-pub-9312214619729808');
+        console.log('📌 Ad Unit ID: 8520276979');
+    </script>
 </body>
 </html>
